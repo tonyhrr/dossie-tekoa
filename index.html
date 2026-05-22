@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossiê Interativo: Tekoa Bananeiras</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Config & Custom Styles -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        'tekoa-bg': '#F9F8F6',
+                        'tekoa-green': '#4A5D23',
+                        'tekoa-gold': '#C5A880',
+                        'tekoa-dark': '#2C3525',
+                        'tekoa-text': '#4B4B4B'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F9F8F6;
+            color: #4B4B4B;
+            scroll-behavior: smooth;
+        }
+        
+        /* Chart Container Requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .tab-btn.active {
+            border-bottom: 2px solid #4A5D23;
+            color: #4A5D23;
+            font-weight: 600;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-tekoa-text">
+
+    <!-- Chosen Palette: Warm Neutrals & Earthy Tones (Beige #F9F8F6, Olive Green #4A5D23, Muted Gold #C5A880, Dark Slate #2C3525). Chosen to reflect luxury, nature, and the mountain climate of Bananeiras. -->
+    <!-- Application Structure Plan: The SPA uses a storytelling single-page scroll layout. 
+         1. Hero: Establishes mood and location.
+         2. O Destino (Bananeiras): Contextualizes the region (climate, value). Uses a Line Chart for climate data to justify the "winter getaway" appeal.
+         3. O Empreendimento (Tekoa): Details the product. Uses interactive tabs to organize amenities without clutter.
+         4. Gastronomia: Lists local high-end dining, crucial for Bananeiras' appeal.
+         5. Investimento: Uses a Doughnut chart to show land use (emphasizing nature) and text blocks for pricing context. -->
+    <!-- Visualization & Content Choices: 
+         - Climate Data -> Goal: Inform -> Mixed Line/Bar Chart (Chart.js) -> Shows min/max temps proving the cold climate.
+         - Amenities -> Goal: Organize -> Interactive Tabs (JS/HTML) -> Avoids long lists, allows exploration by category (Wellness, Sports, Nature).
+         - Land Use/Investment -> Goal: Proportions -> Doughnut Chart (Chart.js) -> Highlights the high percentage of preserved green area vs lots, a key selling point for luxury eco-resorts. 
+         - Libraries: Tailwind (layout), Chart.js (data viz), Vanilla JS (interactions). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. HTML unicode symbols used for icons. -->
+
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="font-serif text-2xl font-bold text-tekoa-dark tracking-widest">TEKOA</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#destino" class="text-sm text-gray-600 hover:text-tekoa-green transition">O Destino</a>
+                    <a href="#empreendimento" class="text-sm text-gray-600 hover:text-tekoa-green transition">O Empreendimento</a>
+                    <a href="#gastronomia" class="text-sm text-gray-600 hover:text-tekoa-green transition">Gastronomia</a>
+                    <a href="#investimento" class="text-sm text-gray-600 hover:text-tekoa-green transition">Investimento</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="pt-24 pb-16 md:pt-32 md:pb-24 px-4 bg-tekoa-dark text-white text-center">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="font-serif text-4xl md:text-6xl mb-4 text-tekoa-bg fade-in">Seu Refúgio na Serra Paraibana</h1>
+            <p class="text-lg md:text-xl text-gray-300 mb-8 font-light fade-in" style="animation-delay: 0.2s;">
+                Descubra o Tekoa em Bananeiras - PB. Uma harmoniosa integração entre o luxo contemporâneo, a natureza exuberante e o clima europeu no coração do Brejo.
+            </p>
+            <a href="#destino" class="inline-block bg-tekoa-gold text-white px-8 py-3 rounded-full uppercase tracking-wider text-sm hover:bg-opacity-90 transition fade-in" style="animation-delay: 0.4s;">
+                Explorar o Dossiê
+            </a>
+        </div>
+    </header>
+
+    <!-- Section: O Destino (Bananeiras) -->
+    <section id="destino" class="py-16 md:py-24 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">Localização Privilegiada</span>
+                <h2 class="font-serif text-3xl md:text-4xl text-tekoa-dark mt-2">Bananeiras: O Charme do Frio</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-gray-600">
+                    A apenas 140km de João Pessoa, Bananeiras está a quase 600 metros de altitude. Famosa por sua arquitetura histórica, rota cultural "Caminhos do Frio" e clima ameno o ano inteiro.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <!-- Text Data -->
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="text-3xl mb-2">🌡️</div>
+                        <h3 class="font-bold text-tekoa-dark text-lg">Clima Serrano</h3>
+                        <p class="text-sm text-gray-600">Temperaturas que podem chegar a 15°C no inverno (Junho a Agosto), criando a atmosfera perfeita para lareiras e vinhos.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="text-3xl mb-2">⛰️</div>
+                        <h3 class="font-bold text-tekoa-dark text-lg">Geografia & Natureza</h3>
+                        <p class="text-sm text-gray-600">Encravada no Brejo Paraibano, cercada por matas preservadas, cachoeiras e mirantes com vistas deslumbrantes.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="text-3xl mb-2">📈</div>
+                        <h3 class="font-bold text-tekoa-dark text-lg">Valorização</h3>
+                        <p class="text-sm text-gray-600">O principal polo de turismo de luxo e segunda residência da Paraíba e Rio Grande do Norte, com altíssima taxa de valorização imobiliária.</p>
+                    </div>
+                </div>
+
+                <!-- Climate Chart -->
+                <div class="w-full">
+                    <h4 class="text-center font-bold text-tekoa-dark mb-4">Média de Temperatura Anual (°C)</h4>
+                    <div class="chart-container">
+                        <canvas id="climateChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-gray-500 mt-3">Dados estimativos históricos da região do Brejo Paraibano.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: O Empreendimento -->
+    <section id="empreendimento" class="py-16 md:py-24 px-4 bg-white border-y border-gray-200">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">Design & Exclusividade</span>
+                <h2 class="font-serif text-3xl md:text-4xl text-tekoa-dark mt-2">Conheça o Tekoa</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-gray-600">
+                    O Tekoa foi projetado para ser mais que um condomínio, é uma experiência de vida. Interaja com as abas abaixo para descobrir os diferenciais que tornam este projeto único na região.
+                </p>
+            </div>
+
+            <!-- Interactive Tabs -->
+            <div class="max-w-4xl mx-auto">
+                <div class="flex flex-wrap border-b border-gray-200 mb-6 justify-center" id="tabs-container">
+                    <button class="tab-btn active px-4 py-3 mx-2 text-gray-500 hover:text-tekoa-green transition" data-target="lazer">Lazer & Social</button>
+                    <button class="tab-btn px-4 py-3 mx-2 text-gray-500 hover:text-tekoa-green transition" data-target="bemestar">Bem-Estar</button>
+                    <button class="tab-btn px-4 py-3 mx-2 text-gray-500 hover:text-tekoa-green transition" data-target="esportes">Esportes</button>
+                    <button class="tab-btn px-4 py-3 mx-2 text-gray-500 hover:text-tekoa-green transition" data-target="natureza">Natureza</button>
+                </div>
+
+                <!-- Tab Contents -->
+                <div id="tab-content" class="bg-tekoa-bg p-8 rounded-xl border border-gray-100 min-h-[250px] flex items-center justify-center">
+                    <!-- Dynamic content injected here via JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: Gastronomia -->
+    <section id="gastronomia" class="py-16 md:py-24 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">Alta Culinária</span>
+                <h2 class="font-serif text-3xl md:text-4xl text-tekoa-dark mt-2">Gastronomia em Bananeiras</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-gray-600">
+                    A cidade tornou-se um polo gastronômico refinado. Estar no Tekoa é ter acesso rápido a restaurantes renomados, ideais para o clima de serra.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition border border-gray-100">
+                    <div class="h-40 bg-gray-200 flex items-center justify-center text-5xl">🍷</div>
+                    <div class="p-6">
+                        <h3 class="font-serif font-bold text-xl text-tekoa-dark mb-2">Terraço Lisboa</h3>
+                        <p class="text-sm text-gray-600 mb-4">Culinária portuguesa contemporânea, carta de vinhos extensa e ambiente intimista perfeito para noites frias.</p>
+                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Alta Gastronomia</span>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition border border-gray-100">
+                    <div class="h-40 bg-gray-200 flex items-center justify-center text-5xl">🚂</div>
+                    <div class="p-6">
+                        <h3 class="font-serif font-bold text-xl text-tekoa-dark mb-2">Estação Bananeiras</h3>
+                        <p class="text-sm text-gray-600 mb-4">Localizado na antiga estação ferroviária. Famoso pelos fondues, pratos regionais sofisticados e clima histórico.</p>
+                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Tradicional & Fondue</span>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition border border-gray-100">
+                    <div class="h-40 bg-gray-200 flex items-center justify-center text-5xl">🥘</div>
+                    <div class="p-6">
+                        <h3 class="font-serif font-bold text-xl text-tekoa-dark mb-2">Divino Nevoeiro</h3>
+                        <p class="text-sm text-gray-600 mb-4">Especializado em carnes nobres, massas artesanais e uma experiência visual que aproveita a neblina típica do brejo.</p>
+                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Carnes & Massas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: Investimento -->
+    <section id="investimento" class="py-16 md:py-24 px-4 bg-tekoa-dark text-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">Oportunidade</span>
+                <h2 class="font-serif text-3xl md:text-4xl mt-2">Valores & Estrutura</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-gray-300">
+                    Análise do projeto e projeções de investimento para lotes de alto padrão.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <!-- Investment Chart -->
+                <div class="w-full">
+                    <h4 class="text-center font-bold text-tekoa-bg mb-4">Distribuição do Terreno</h4>
+                    <div class="chart-container" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                        <canvas id="landChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Financial Data -->
+                <div class="space-y-6">
+                    <div class="border-l-4 border-tekoa-gold pl-6">
+                        <h3 class="text-2xl font-serif mb-2">Lotes a partir de 400m²</h3>
+                        <p class="text-gray-300">Espaço ideal para construir sua casa de campo com projetos arquitetônicos imponentes.</p>
+                    </div>
+                    
+                    <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
+                        <h4 class="font-bold mb-2 flex items-center justify-between">
+                            <span>Média de Valores Estimados</span>
+                            <span class="text-2xl">💰</span>
+                        </h4>
+                        <ul class="space-y-3 text-sm text-gray-200 mt-4">
+                            <li class="flex justify-between border-b border-white/10 pb-2">
+                                <span>Lote Padrão (400m²)</span>
+                                <span class="font-bold">R$ 280.000 - R$ 350.000</span>
+                            </li>
+                            <li class="flex justify-between border-b border-white/10 pb-2">
+                                <span>Lote Premium (Esquina/Vista)</span>
+                                <span class="font-bold">R$ 400.000 - R$ 600.000+</span>
+                            </li>
+                            <li class="flex justify-between pb-2">
+                                <span>Taxa Histórica de Valorização (A.A.)</span>
+                                <span class="font-bold text-tekoa-gold">~15% a 22%</span>
+                            </li>
+                        </ul>
+                        <p class="text-xs text-gray-400 mt-4">* Valores simulados baseados no mercado de alto padrão de Bananeiras. Consulte a tabela de vendas oficial atualizada.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#1A2016] text-gray-400 py-8 text-center text-sm">
+        <p>© 2026 Dossiê Interativo Tekoa Bananeiras.</p>
+        <p class="mt-2 text-xs">Este é um relatório analítico interativo. As informações de valores são estimativas de mercado.</p>
+    </footer>
+
+    <!-- JavaScript Interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. Tab Logic for "O Empreendimento" ---
+            const tabData = {
+                'lazer': {
+                    icon: '🥂',
+                    title: 'Clube Social & Gastronomia',
+                    text: 'O Tekoa oferece um clube completo com Salão de Festas de alto padrão, Espaço Gourmet integrado, e adegas climatizadas. Perfeito para receber amigos, organizar jantares e celebrar a vida no clima frio da serra.'
+                },
+                'bemestar': {
+                    icon: '🧖‍♀️',
+                    title: 'Spa & Piscinas Aquecidas',
+                    text: 'Relaxe com nossa infraestrutura de Spa, incluindo sauna úmida e seca, salas de massagem, ofurôs e um complexo de piscinas aquecidas cobertas e descobertas com borda infinita voltada para o vale.'
+                },
+                'esportes': {
+                    icon: '🎾',
+                    title: 'Complexo Esportivo',
+                    text: 'Para os mais ativos, quadras de Beach Tennis, Quadra de Tênis em saibro, campo de futebol society e uma academia completa com equipamentos de última geração e vista panorâmica.'
+                },
+                'natureza': {
+                    icon: '🌲',
+                    title: 'Integração Ecológica',
+                    text: 'Mais de 40% da área do empreendimento é dedicada à preservação. Desfrute de trilhas ecológicas sinalizadas, praças temáticas com fogueiras (fire pits) e pomares comunitários.'
+                }
+            };
+
+            const tabContainer = document.getElementById('tab-content');
+            const tabBtns = document.querySelectorAll('.tab-btn');
+
+            function renderTabContent(key) {
+                const data = tabData[key];
+                tabContainer.innerHTML = `
+                    <div class="text-center max-w-2xl fade-in">
+                        <div class="text-6xl mb-4">${data.icon}</div>
+                        <h3 class="font-serif text-2xl text-tekoa-dark font-bold mb-3">${data.title}</h3>
+                        <p class="text-gray-600 leading-relaxed">${data.text}</p>
+                    </div>
+                `;
+            }
+
+            // Init first tab
+            renderTabContent('lazer');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    const targetKey = e.target.getAttribute('data-target');
+                    renderTabContent(targetKey);
+                });
+            });
+
+            // --- 2. Chart.js Configurations ---
+
+            // Chart 1: Climate Chart (Mixed Line/Bar)
+            const ctxClimate = document.getElementById('climateChart').getContext('2d');
+            new Chart(ctxClimate, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Temperatura Mínima (°C)',
+                            data: [21, 21, 21, 20, 18, 16, 15, 15, 17, 19, 20, 21],
+                            borderColor: '#4A5D23',
+                            backgroundColor: '#4A5D23',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Temperatura Máxima (°C)',
+                            data: [30, 30, 29, 28, 26, 24, 23, 24, 26, 28, 29, 30],
+                            backgroundColor: 'rgba(197, 168, 128, 0.6)',
+                            borderColor: '#C5A880',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter' } } },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) { label += context.parsed.y + '°C'; }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 10,
+                            max: 35,
+                            title: { display: true, text: 'Graus Celsius' }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Land Distribution Chart (Doughnut)
+            // Need to set defaults for dark mode chart text
+            Chart.defaults.color = '#e5e7eb';
+            const ctxLand = document.getElementById('landChart').getContext('2d');
+            new Chart(ctxLand, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Área Verde & Preservação', 'Lotes Residenciais', 'Área de Lazer & Vias'],
+                    datasets: [{
+                        data: [45, 40, 15],
+                        backgroundColor: [
+                            '#4A5D23', // Green
+                            '#C5A880', // Gold
+                            '#7f8c8d'  // Gray
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { color: '#e5e7eb', font: { family: 'Inter' } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
