@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dossiê Interativo: Tekoa Bananeiras</title>
+    <title>Tekoá Boutique Residences | Dossiê Exclusivo</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,10 +11,13 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- FontAwesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
     <!-- Tailwind Config & Custom Styles -->
     <script>
@@ -27,10 +30,15 @@
                     },
                     colors: {
                         'tekoa-bg': '#F9F8F6',
-                        'tekoa-green': '#4A5D23',
+                        'tekoa-green': '#3A4D23', /* Um tom de verde mais profundo e elegante */
+                        'tekoa-green-light': '#5A6D43',
                         'tekoa-gold': '#C5A880',
-                        'tekoa-dark': '#2C3525',
+                        'tekoa-gold-dark': '#A38760',
+                        'tekoa-dark': '#1E2418',
                         'tekoa-text': '#4B4B4B'
+                    },
+                    backgroundImage: {
+                        'hero-pattern': "linear-gradient(to bottom, rgba(30, 36, 24, 0.6), rgba(30, 36, 24, 0.9)), url('https://images.unsplash.com/photo-1518098268026-4e89f1a2cd8e?q=80&w=2000&auto=format&fit=crop')",
                     }
                 }
             }
@@ -41,318 +49,380 @@
         body {
             background-color: #F9F8F6;
             color: #4B4B4B;
-            scroll-behavior: smooth;
         }
         
-        /* Chart Container Requirements */
+        /* Containers de Gráficos */
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
             height: 350px;
-            max-height: 400px;
             background: #ffffff;
-            border-radius: 12px;
-            padding: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
-        .tab-btn.active {
-            border-bottom: 2px solid #4A5D23;
-            color: #4A5D23;
-            font-weight: 600;
+        /* Animação WhatsApp Flutuante */
+        @keyframes pulse-wa {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+        .btn-whatsapp-floating {
+            animation: pulse-wa 2s infinite;
         }
 
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+        /* Classes para animação de Scroll (Intersection Observer) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Efeitos de Hover em Cards */
+        .amenity-card {
+            transition: all 0.3s ease;
+        }
+        .amenity-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #C5A880;
         }
     </style>
 </head>
-<body class="font-sans antialiased text-tekoa-text">
+<body class="font-sans antialiased text-tekoa-text overflow-x-hidden">
 
-    <!-- Chosen Palette: Warm Neutrals & Earthy Tones (Beige #F9F8F6, Olive Green #4A5D23, Muted Gold #C5A880, Dark Slate #2C3525). Chosen to reflect luxury, nature, and the mountain climate of Bananeiras. -->
-    <!-- Application Structure Plan: The SPA uses a storytelling single-page scroll layout. 
-         1. Hero: Establishes mood and location.
-         2. O Destino (Bananeiras): Contextualizes the region (climate, value). Uses a Line Chart for climate data to justify the "winter getaway" appeal.
-         3. O Empreendimento (Tekoa): Details the product. Uses interactive tabs to organize amenities without clutter.
-         4. Gastronomia: Lists local high-end dining, crucial for Bananeiras' appeal.
-         5. Investimento: Uses a Doughnut chart to show land use (emphasizing nature) and text blocks for pricing context. -->
-    <!-- Visualization & Content Choices: 
-         - Climate Data -> Goal: Inform -> Mixed Line/Bar Chart (Chart.js) -> Shows min/max temps proving the cold climate.
-         - Amenities -> Goal: Organize -> Interactive Tabs (JS/HTML) -> Avoids long lists, allows exploration by category (Wellness, Sports, Nature).
-         - Land Use/Investment -> Goal: Proportions -> Doughnut Chart (Chart.js) -> Highlights the high percentage of preserved green area vs lots, a key selling point for luxury eco-resorts. 
-         - Libraries: Tailwind (layout), Chart.js (data viz), Vanilla JS (interactions). -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. HTML unicode symbols used for icons. -->
+    <!-- Whatsapp Variables -->
+    <script>
+        const waLink = "https://wa.me/5583993339357?text=Quero%20saber%20mais%20do%20Tekoa!";
+    </script>
 
     <!-- Navigation -->
-    <nav class="fixed w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex-shrink-0 flex items-center">
-                    <span class="font-serif text-2xl font-bold text-tekoa-dark tracking-widest">TEKOA</span>
+    <nav class="fixed w-full bg-white/95 backdrop-blur-md z-50 border-b border-gray-100 shadow-sm transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo Corretor (Upload Local) -->
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="logo%20ildo.png" alt="Ildo Consultoria" class="h-12 w-auto object-contain rounded-full shadow-sm border border-gray-100" onerror="this.src='https://ui-avatars.com/api/?name=ILDO&background=C5A880&color=fff'">
+                    <div class="hidden sm:block border-l border-gray-300 h-8 mx-2"></div>
+                    <span class="font-serif text-xl font-bold text-tekoa-dark tracking-widest hidden sm:block">TEKOÁ</span>
                 </div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="#destino" class="text-sm text-gray-600 hover:text-tekoa-green transition">O Destino</a>
-                    <a href="#empreendimento" class="text-sm text-gray-600 hover:text-tekoa-green transition">O Empreendimento</a>
-                    <a href="#gastronomia" class="text-sm text-gray-600 hover:text-tekoa-green transition">Gastronomia</a>
-                    <a href="#investimento" class="text-sm text-gray-600 hover:text-tekoa-green transition">Investimento</a>
+                
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#conceito" class="text-sm font-medium text-gray-600 hover:text-tekoa-gold transition">O Conceito</a>
+                    <a href="#diferenciais" class="text-sm font-medium text-gray-600 hover:text-tekoa-gold transition">Diferenciais</a>
+                    <a href="#destino" class="text-sm font-medium text-gray-600 hover:text-tekoa-gold transition">Bananeiras</a>
+                    <a href="#casas" class="text-sm font-medium text-gray-600 hover:text-tekoa-gold transition">Residências</a>
+                    <a href="javascript:void(0)" onclick="window.open(waLink, '_blank')" class="bg-tekoa-green text-white px-6 py-2 rounded-full text-sm font-semibold hover:bg-tekoa-green-light transition shadow-md flex items-center gap-2">
+                        <i class="fab fa-whatsapp text-lg"></i> Falar com Ildo
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <a href="javascript:void(0)" onclick="window.open(waLink, '_blank')" class="text-tekoa-green text-2xl mr-4">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="pt-24 pb-16 md:pt-32 md:pb-24 px-4 bg-tekoa-dark text-white text-center">
-        <div class="max-w-4xl mx-auto">
-            <h1 class="font-serif text-4xl md:text-6xl mb-4 text-tekoa-bg fade-in">Seu Refúgio na Serra Paraibana</h1>
-            <p class="text-lg md:text-xl text-gray-300 mb-8 font-light fade-in" style="animation-delay: 0.2s;">
-                Descubra o Tekoa em Bananeiras - PB. Uma harmoniosa integração entre o luxo contemporâneo, a natureza exuberante e o clima europeu no coração do Brejo.
+    <header class="relative pt-32 pb-24 md:pt-48 md:pb-32 px-4 bg-hero-pattern bg-cover bg-center bg-fixed bg-no-repeat text-center flex flex-col justify-center min-h-[85vh]">
+        <div class="max-w-4xl mx-auto relative z-10 reveal">
+            <span class="text-tekoa-gold uppercase tracking-[0.3em] text-xs md:text-sm font-semibold mb-4 block">Bauten Desenvolvimento Imobiliário</span>
+            <h1 class="font-serif text-5xl md:text-7xl mb-6 text-white leading-tight">Abra as portas para o <span class="italic text-tekoa-gold">extraordinário.</span></h1>
+            <p class="text-lg md:text-xl text-gray-200 mb-10 font-light max-w-2xl mx-auto">
+                No alto da serra paraibana, o Tekoá redefine o luxo unindo o melhor da arquitetura contemporânea com a essência de Bananeiras.
             </p>
-            <a href="#destino" class="inline-block bg-tekoa-gold text-white px-8 py-3 rounded-full uppercase tracking-wider text-sm hover:bg-opacity-90 transition fade-in" style="animation-delay: 0.4s;">
-                Explorar o Dossiê
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="javascript:void(0)" onclick="window.open(waLink, '_blank')" class="bg-tekoa-gold text-white px-8 py-4 rounded-full uppercase tracking-wider text-sm font-bold hover:bg-tekoa-gold-dark transition shadow-lg flex items-center justify-center gap-2">
+                    <i class="fab fa-whatsapp text-xl"></i> Receber Tabela de Valores
+                </a>
+                <a href="#conceito" class="border border-white/30 bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-full uppercase tracking-wider text-sm font-bold hover:bg-white/20 transition flex items-center justify-center">
+                    Explorar o Dossiê
+                </a>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#conceito" class="text-white/50 hover:text-white transition">
+                <i class="fas fa-chevron-down text-2xl"></i>
             </a>
         </div>
     </header>
 
-    <!-- Section: O Destino (Bananeiras) -->
-    <section id="destino" class="py-16 md:py-24 px-4">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-12">
-                <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">Localização Privilegiada</span>
-                <h2 class="font-serif text-3xl md:text-4xl text-tekoa-dark mt-2">Bananeiras: O Charme do Frio</h2>
-                <p class="mt-4 max-w-2xl mx-auto text-gray-600">
-                    A apenas 140km de João Pessoa, Bananeiras está a quase 600 metros de altitude. Famosa por sua arquitetura histórica, rota cultural "Caminhos do Frio" e clima ameno o ano inteiro.
+    <!-- Section 1: Conceito & Spa -->
+    <section id="conceito" class="py-20 md:py-32 px-4 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">O Primeiro do Nordeste</span>
+                    <h2 class="font-serif text-4xl md:text-5xl text-tekoa-dark mt-4 mb-6 leading-tight">Um refúgio dentro do refúgio.</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed text-lg">
+                        O TEKOÁ revoluciona o conceito de bem-estar ao apresentar o exclusivo <strong>SPA L'Occitane au Brésil</strong> — algo inédito em uma incorporação no nordeste brasileiro.
+                    </p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-leaf text-tekoa-green mt-1"></i>
+                            <span class="text-gray-700">Tradição e sofisticação da L'Occitane fundidas à energia da serra.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-hot-tub text-tekoa-green mt-1"></i>
+                            <span class="text-gray-700">Complexo de hidromassagem e piscinas aquecidas para relaxamento absoluto.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-mobile-alt text-tekoa-green mt-1"></i>
+                            <span class="text-gray-700"><strong>App Tekoá:</strong> Um aplicativo inteligente para acionar o Concierge e reservar serviços sob demanda.</span>
+                        </li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="window.open(waLink, '_blank')" class="text-tekoa-green font-semibold hover:text-tekoa-gold transition flex items-center gap-2 uppercase tracking-wide text-sm">
+                        Agendar Visita ao Projeto <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="relative reveal">
+                    <!-- Composition of abstract blocks to simulate luxury images -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-tekoa-bg rounded-2xl h-64 md:h-80 shadow-inner flex flex-col items-center justify-center p-6 border border-gray-100 text-center relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-tekoa-green opacity-0 group-hover:opacity-10 transition duration-500"></div>
+                            <i class="fas fa-spa text-5xl text-tekoa-gold mb-4"></i>
+                            <h3 class="font-serif text-xl font-bold text-tekoa-dark">Spa L'Occitane</h3>
+                            <p class="text-sm text-gray-500 mt-2">Rituais de bem-estar</p>
+                        </div>
+                        <div class="bg-tekoa-bg rounded-2xl h-64 md:h-80 shadow-inner flex flex-col items-center justify-center p-6 border border-gray-100 text-center mt-8 relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-tekoa-gold opacity-0 group-hover:opacity-10 transition duration-500"></div>
+                            <i class="fas fa-concierge-bell text-5xl text-tekoa-green mb-4"></i>
+                            <h3 class="font-serif text-xl font-bold text-tekoa-dark">Concierge</h3>
+                            <p class="text-sm text-gray-500 mt-2">Serviços sob demanda</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Diferenciais (Grid) -->
+    <section id="diferenciais" class="py-20 md:py-32 px-4 bg-tekoa-bg border-y border-gray-200">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">Masterplan Premium</span>
+                <h2 class="font-serif text-4xl md:text-5xl text-tekoa-dark mt-4">A Singularidade do Tekoá</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-gray-600 text-lg">
+                    Mais de 17.230m² de terreno projetados para uma convivência harmônica entre luxo, lazer e ecologia.
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <!-- Text Data -->
-                <div class="space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <div class="text-3xl mb-2">🌡️</div>
-                        <h3 class="font-bold text-tekoa-dark text-lg">Clima Serrano</h3>
-                        <p class="text-sm text-gray-600">Temperaturas que podem chegar a 15°C no inverno (Junho a Agosto), criando a atmosfera perfeita para lareiras e vinhos.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="amenity-card bg-white p-8 rounded-2xl border border-gray-100 reveal">
+                    <div class="w-14 h-14 bg-tekoa-bg rounded-full flex items-center justify-center mb-6 border border-gray-200">
+                        <i class="fas fa-tree text-2xl text-tekoa-green"></i>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <div class="text-3xl mb-2">⛰️</div>
-                        <h3 class="font-bold text-tekoa-dark text-lg">Geografia & Natureza</h3>
-                        <p class="text-sm text-gray-600">Encravada no Brejo Paraibano, cercada por matas preservadas, cachoeiras e mirantes com vistas deslumbrantes.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <div class="text-3xl mb-2">📈</div>
-                        <h3 class="font-bold text-tekoa-dark text-lg">Valorização</h3>
-                        <p class="text-sm text-gray-600">O principal polo de turismo de luxo e segunda residência da Paraíba e Rio Grande do Norte, com altíssima taxa de valorização imobiliária.</p>
-                    </div>
+                    <h3 class="font-bold text-tekoa-dark text-xl mb-2">9.000m² de Área Verde</h3>
+                    <p class="text-gray-600 text-sm">Mais de 4.005m² de Área de Preservação Permanente (APP), chancelado pelo Selo Floresta Branca.</p>
                 </div>
 
-                <!-- Climate Chart -->
-                <div class="w-full">
-                    <h4 class="text-center font-bold text-tekoa-dark mb-4">Média de Temperatura Anual (°C)</h4>
+                <!-- Card 2 -->
+                <div class="amenity-card bg-white p-8 rounded-2xl border border-gray-100 reveal" style="transition-delay: 0.1s;">
+                    <div class="w-14 h-14 bg-tekoa-bg rounded-full flex items-center justify-center mb-6 border border-gray-200">
+                        <i class="fas fa-bolt text-2xl text-tekoa-gold"></i>
+                    </div>
+                    <h3 class="font-bold text-tekoa-dark text-xl mb-2">Fiação Subterrânea</h3>
+                    <p class="text-gray-600 text-sm">Rede elétrica 100% subterrânea com iluminação em LED, garantindo uma paisagem limpa e sem postes.</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="amenity-card bg-white p-8 rounded-2xl border border-gray-100 reveal" style="transition-delay: 0.2s;">
+                    <div class="w-14 h-14 bg-tekoa-bg rounded-full flex items-center justify-center mb-6 border border-gray-200">
+                        <i class="fas fa-wine-glass-alt text-2xl text-tekoa-green"></i>
+                    </div>
+                    <h3 class="font-bold text-tekoa-dark text-xl mb-2">Clube do Vinho</h3>
+                    <p class="text-gray-600 text-sm">Wine Bar íntimo e sofisticado com adega climatizada, perfeito para o clima invernal de Bananeiras.</p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="amenity-card bg-white p-8 rounded-2xl border border-gray-100 reveal" style="transition-delay: 0.3s;">
+                    <div class="w-14 h-14 bg-tekoa-bg rounded-full flex items-center justify-center mb-6 border border-gray-200">
+                        <i class="fas fa-fire text-2xl text-tekoa-gold"></i>
+                    </div>
+                    <h3 class="font-bold text-tekoa-dark text-xl mb-2">Praças do Fogo</h3>
+                    <p class="text-gray-600 text-sm">Lounges abertos com lareiras ecológicas espalhadas pelo condomínio para momentos de contemplação.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Destino Bananeiras (Data & Charts) -->
+    <section id="destino" class="py-20 md:py-32 px-4 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                
+                <!-- Left: Chart -->
+                <div class="w-full reveal order-2 lg:order-1">
+                    <h3 class="font-serif text-2xl text-tekoa-dark mb-6">A Economia do Clima Serrano</h3>
                     <div class="chart-container">
                         <canvas id="climateChart"></canvas>
                     </div>
-                    <p class="text-xs text-center text-gray-500 mt-3">Dados estimativos históricos da região do Brejo Paraibano.</p>
+                    <p class="text-xs text-gray-500 mt-4 text-center"><i class="fas fa-info-circle"></i> O frio atua como o alicerce econômico que hiper-valoriza o metro quadrado da região.</p>
                 </div>
+
+                <!-- Right: Text -->
+                <div class="reveal order-1 lg:order-2">
+                    <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">Localização & Gastronomia</span>
+                    <h2 class="font-serif text-4xl md:text-5xl text-tekoa-dark mt-4 mb-6 leading-tight">Bananeiras: O Charme do Frio.</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed text-lg">
+                        A apenas 140km de João Pessoa e encravada no Brejo Paraibano a quase 600 metros de altitude, Bananeiras é o maior vetor de valorização imobiliária do Nordeste.
+                    </p>
+                    
+                    <div class="space-y-6 mt-8">
+                        <div class="flex items-center gap-4 p-4 rounded-xl bg-tekoa-bg border border-gray-100">
+                            <div class="text-3xl text-tekoa-green"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <h4 class="font-bold text-tekoa-dark">Posição Estratégica</h4>
+                                <p class="text-sm text-gray-600">A apenas 1.3km do Centro e a 420m do lendário Restaurante Recanto do Picuí.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-4 rounded-xl bg-tekoa-bg border border-gray-100">
+                            <div class="text-3xl text-tekoa-gold"><i class="fas fa-utensils"></i></div>
+                            <div>
+                                <h4 class="font-bold text-tekoa-dark">Polo Gastronômico</h4>
+                                <p class="text-sm text-gray-600">Vizinho da alta gastronomia como Estação Bananeiras, Terraço Lisboa e Divino Nevoeiro.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <!-- Section: O Empreendimento -->
-    <section id="empreendimento" class="py-16 md:py-24 px-4 bg-white border-y border-gray-200">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-12">
-                <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">Design & Exclusividade</span>
-                <h2 class="font-serif text-3xl md:text-4xl text-tekoa-dark mt-2">Conheça o Tekoa</h2>
-                <p class="mt-4 max-w-2xl mx-auto text-gray-600">
-                    O Tekoa foi projetado para ser mais que um condomínio, é uma experiência de vida. Interaja com as abas abaixo para descobrir os diferenciais que tornam este projeto único na região.
-                </p>
-            </div>
+    <!-- Section 4: As Casas / Produto -->
+    <section id="casas" class="py-20 md:py-32 px-4 bg-tekoa-dark text-white relative overflow-hidden">
+        <!-- Decorativa BG -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-tekoa-green/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
-            <!-- Interactive Tabs -->
-            <div class="max-w-4xl mx-auto">
-                <div class="flex flex-wrap border-b border-gray-200 mb-6 justify-center" id="tabs-container">
-                    <button class="tab-btn active px-4 py-3 mx-2 text-gray-500 hover:text-tekoa-green transition" data-target="lazer">Lazer & Social</button>
-                    <button class="tab-btn px-4 py-3 mx-2 text-gray-500 hover:text-tekoa-green transition" data-target="bemestar">Bem-Estar</button>
-                    <button class="tab-btn px-4 py-3 mx-2 text-gray-500 hover:text-tekoa-green transition" data-target="esportes">Esportes</button>
-                    <button class="tab-btn px-4 py-3 mx-2 text-gray-500 hover:text-tekoa-green transition" data-target="natureza">Natureza</button>
-                </div>
-
-                <!-- Tab Contents -->
-                <div id="tab-content" class="bg-tekoa-bg p-8 rounded-xl border border-gray-100 min-h-[250px] flex items-center justify-center">
-                    <!-- Dynamic content injected here via JS -->
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section: Gastronomia -->
-    <section id="gastronomia" class="py-16 md:py-24 px-4">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-12">
-                <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">Alta Culinária</span>
-                <h2 class="font-serif text-3xl md:text-4xl text-tekoa-dark mt-2">Gastronomia em Bananeiras</h2>
-                <p class="mt-4 max-w-2xl mx-auto text-gray-600">
-                    A cidade tornou-se um polo gastronômico refinado. Estar no Tekoa é ter acesso rápido a restaurantes renomados, ideais para o clima de serra.
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16 reveal">
+                <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">Tipologias</span>
+                <h2 class="font-serif text-4xl md:text-5xl mt-4">Arquitetura Contemporânea</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-gray-300 text-lg">
+                    Releitura sofisticada da vida serrana, com plantas modulares perfeitas para renda passiva ou residência secundária.
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Card 1 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition border border-gray-100">
-                    <div class="h-40 bg-gray-200 flex items-center justify-center text-5xl">🍷</div>
-                    <div class="p-6">
-                        <h3 class="font-serif font-bold text-xl text-tekoa-dark mb-2">Terraço Lisboa</h3>
-                        <p class="text-sm text-gray-600 mb-4">Culinária portuguesa contemporânea, carta de vinhos extensa e ambiente intimista perfeito para noites frias.</p>
-                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Alta Gastronomia</span>
+                <!-- Casas Spec -->
+                <div class="col-span-1 md:col-span-1 space-y-6 reveal">
+                    <div class="border-l-2 border-tekoa-gold pl-6 py-2">
+                        <h4 class="font-bold text-xl mb-1">Conforto Absoluto</h4>
+                        <p class="text-gray-400 text-sm">Projetos entregues com alto rigor construtivo.</p>
                     </div>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3 text-gray-300"><i class="fas fa-check text-tekoa-green-light"></i> Isolamento Térmico</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i class="fas fa-check text-tekoa-green-light"></i> Tratamento Acústico</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i class="fas fa-check text-tekoa-green-light"></i> Fechadura Digital</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i class="fas fa-check text-tekoa-green-light"></i> Iluminação Natural Ampliada</li>
+                        <li class="flex items-center gap-3 text-gray-300"><i class="fas fa-check text-tekoa-green-light"></i> Bauten Möbel (Opção de Mobília)</li>
+                    </ul>
                 </div>
 
-                <!-- Card 2 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition border border-gray-100">
-                    <div class="h-40 bg-gray-200 flex items-center justify-center text-5xl">🚂</div>
-                    <div class="p-6">
-                        <h3 class="font-serif font-bold text-xl text-tekoa-dark mb-2">Estação Bananeiras</h3>
-                        <p class="text-sm text-gray-600 mb-4">Localizado na antiga estação ferroviária. Famoso pelos fondues, pratos regionais sofisticados e clima histórico.</p>
-                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Tradicional & Fondue</span>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition border border-gray-100">
-                    <div class="h-40 bg-gray-200 flex items-center justify-center text-5xl">🥘</div>
-                    <div class="p-6">
-                        <h3 class="font-serif font-bold text-xl text-tekoa-dark mb-2">Divino Nevoeiro</h3>
-                        <p class="text-sm text-gray-600 mb-4">Especializado em carnes nobres, massas artesanais e uma experiência visual que aproveita a neblina típica do brejo.</p>
-                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Carnes & Massas</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section: Investimento -->
-    <section id="investimento" class="py-16 md:py-24 px-4 bg-tekoa-dark text-white">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-12">
-                <span class="text-tekoa-gold uppercase tracking-widest text-sm font-semibold">Oportunidade</span>
-                <h2 class="font-serif text-3xl md:text-4xl mt-2">Valores & Estrutura</h2>
-                <p class="mt-4 max-w-2xl mx-auto text-gray-300">
-                    Análise do projeto e projeções de investimento para lotes de alto padrão.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <!-- Investment Chart -->
-                <div class="w-full">
-                    <h4 class="text-center font-bold text-tekoa-bg mb-4">Distribuição do Terreno</h4>
-                    <div class="chart-container" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
-                        <canvas id="landChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Financial Data -->
-                <div class="space-y-6">
-                    <div class="border-l-4 border-tekoa-gold pl-6">
-                        <h3 class="text-2xl font-serif mb-2">Lotes a partir de 400m²</h3>
-                        <p class="text-gray-300">Espaço ideal para construir sua casa de campo com projetos arquitetônicos imponentes.</p>
+                <!-- Plantas -->
+                <div class="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6 reveal">
+                    <div class="bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 hover:border-tekoa-gold/50 transition">
+                        <div class="bg-white/10 w-max px-3 py-1 rounded text-xs uppercase tracking-widest text-tekoa-gold mb-4">Investidor</div>
+                        <h3 class="font-serif text-2xl mb-2">Estúdios / Flats</h3>
+                        <p class="text-gray-300 text-sm mb-4">A partir de 26m² até 29m² (Final 02 a 08).</p>
+                        <p class="text-gray-400 text-xs">Ideal para locação de curta temporada, gerando alta liquidez nas épocas de festivais de frio e golfe com gestão simplificada.</p>
                     </div>
                     
-                    <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm">
-                        <h4 class="font-bold mb-2 flex items-center justify-between">
-                            <span>Média de Valores Estimados</span>
-                            <span class="text-2xl">💰</span>
-                        </h4>
-                        <ul class="space-y-3 text-sm text-gray-200 mt-4">
-                            <li class="flex justify-between border-b border-white/10 pb-2">
-                                <span>Lote Padrão (400m²)</span>
-                                <span class="font-bold">R$ 280.000 - R$ 350.000</span>
-                            </li>
-                            <li class="flex justify-between border-b border-white/10 pb-2">
-                                <span>Lote Premium (Esquina/Vista)</span>
-                                <span class="font-bold">R$ 400.000 - R$ 600.000+</span>
-                            </li>
-                            <li class="flex justify-between pb-2">
-                                <span>Taxa Histórica de Valorização (A.A.)</span>
-                                <span class="font-bold text-tekoa-gold">~15% a 22%</span>
-                            </li>
-                        </ul>
-                        <p class="text-xs text-gray-400 mt-4">* Valores simulados baseados no mercado de alto padrão de Bananeiras. Consulte a tabela de vendas oficial atualizada.</p>
+                    <div class="bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 hover:border-tekoa-gold/50 transition">
+                        <div class="bg-white/10 w-max px-3 py-1 rounded text-xs uppercase tracking-widest text-tekoa-gold mb-4">Família</div>
+                        <h3 class="font-serif text-2xl mb-2">Casas Premium</h3>
+                        <p class="text-gray-300 text-sm mb-4">2 e 3 Suítes / Plantas Amplas</p>
+                        <p class="text-gray-400 text-xs">A verdadeira segunda residência. Plantas com Lavabo, Terraço, Jardim Gourmet e amplas suítes no pavimento superior.</p>
                     </div>
                 </div>
+            </div>
+            
+            <div class="mt-16 text-center reveal">
+                 <a href="javascript:void(0)" onclick="window.open(waLink, '_blank')" class="bg-tekoa-gold text-white px-10 py-4 rounded-full uppercase tracking-wider text-sm font-bold hover:bg-tekoa-gold-dark transition shadow-lg inline-flex items-center gap-2">
+                    <i class="fas fa-file-pdf"></i> Solicitar Apresentação e Plantas Oficiais
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-[#1A2016] text-gray-400 py-8 text-center text-sm">
-        <p>© 2026 Dossiê Interativo Tekoa Bananeiras.</p>
-        <p class="mt-2 text-xs">Este é um relatório analítico interativo. As informações de valores são estimativas de mercado.</p>
+    <!-- Footer / CTA -->
+    <footer class="bg-[#151911] text-gray-400 py-12 px-4 border-t border-white/5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3">
+                 <img src="logo%20ildo.png" alt="Ildo Consultoria" class="h-10 w-auto object-contain rounded-full opacity-80" onerror="this.style.display='none'">
+                 <span class="font-serif text-xl font-bold text-white tracking-widest">TEKOÁ</span>
+            </div>
+            
+            <p class="text-sm text-center md:text-left">
+                Vendas Oficiais: <strong>Ildo Consultoria Imobiliária</strong><br>
+                <span class="text-xs">Bauten Desenvolvimento Imobiliário - R-06-12.835</span>
+            </p>
+
+            <a href="javascript:void(0)" onclick="window.open(waLink, '_blank')" class="text-white hover:text-tekoa-gold transition flex items-center gap-2">
+                <i class="fab fa-whatsapp text-2xl"></i> (83) 99333-9357
+            </a>
+        </div>
     </footer>
+
+    <!-- Botão WhatsApp Flutuante -->
+    <a href="javascript:void(0)" onclick="window.open(waLink, '_blank')" class="fixed bottom-6 right-6 bg-[#25D366] text-white w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-2xl z-50 btn-whatsapp-floating hover:bg-[#20bd5a] transition-colors" title="Falar no WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <!-- JavaScript Interactivity -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- 1. Tab Logic for "O Empreendimento" ---
-            const tabData = {
-                'lazer': {
-                    icon: '🥂',
-                    title: 'Clube Social & Gastronomia',
-                    text: 'O Tekoa oferece um clube completo com Salão de Festas de alto padrão, Espaço Gourmet integrado, e adegas climatizadas. Perfeito para receber amigos, organizar jantares e celebrar a vida no clima frio da serra.'
-                },
-                'bemestar': {
-                    icon: '🧖‍♀️',
-                    title: 'Spa & Piscinas Aquecidas',
-                    text: 'Relaxe com nossa infraestrutura de Spa, incluindo sauna úmida e seca, salas de massagem, ofurôs e um complexo de piscinas aquecidas cobertas e descobertas com borda infinita voltada para o vale.'
-                },
-                'esportes': {
-                    icon: '🎾',
-                    title: 'Complexo Esportivo',
-                    text: 'Para os mais ativos, quadras de Beach Tennis, Quadra de Tênis em saibro, campo de futebol society e uma academia completa com equipamentos de última geração e vista panorâmica.'
-                },
-                'natureza': {
-                    icon: '🌲',
-                    title: 'Integração Ecológica',
-                    text: 'Mais de 40% da área do empreendimento é dedicada à preservação. Desfrute de trilhas ecológicas sinalizadas, praças temáticas com fogueiras (fire pits) e pomares comunitários.'
+            // --- 1. Navbar Scroll Effect ---
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('shadow-md');
+                    navbar.classList.remove('bg-white/95');
+                    navbar.classList.add('bg-white');
+                } else {
+                    navbar.classList.remove('shadow-md');
+                    navbar.classList.add('bg-white/95');
+                    navbar.classList.remove('bg-white');
                 }
-            };
-
-            const tabContainer = document.getElementById('tab-content');
-            const tabBtns = document.querySelectorAll('.tab-btn');
-
-            function renderTabContent(key) {
-                const data = tabData[key];
-                tabContainer.innerHTML = `
-                    <div class="text-center max-w-2xl fade-in">
-                        <div class="text-6xl mb-4">${data.icon}</div>
-                        <h3 class="font-serif text-2xl text-tekoa-dark font-bold mb-3">${data.title}</h3>
-                        <p class="text-gray-600 leading-relaxed">${data.text}</p>
-                    </div>
-                `;
-            }
-
-            // Init first tab
-            renderTabContent('lazer');
-
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    const targetKey = e.target.getAttribute('data-target');
-                    renderTabContent(targetKey);
-                });
             });
 
-            // --- 2. Chart.js Configurations ---
+            // --- 2. Scroll Reveal Animation (Intersection Observer) ---
+            const reveals = document.querySelectorAll('.reveal');
+            const revealOptions = {
+                threshold: 0.15,
+                rootMargin: "0px 0px -50px 0px"
+            };
 
-            // Chart 1: Climate Chart (Mixed Line/Bar)
+            const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target); // Anima apenas uma vez
+                });
+            }, revealOptions);
+
+            reveals.forEach(reveal => {
+                revealOnScroll.observe(reveal);
+            });
+
+            // --- 3. Chart.js Configurations (Climate Chart) ---
+            Chart.defaults.font.family = 'Inter';
             const ctxClimate = document.getElementById('climateChart').getContext('2d');
             new Chart(ctxClimate, {
                 type: 'bar',
@@ -361,22 +431,25 @@
                     datasets: [
                         {
                             type: 'line',
-                            label: 'Temperatura Mínima (°C)',
+                            label: 'Mínima (°C)',
                             data: [21, 21, 21, 20, 18, 16, 15, 15, 17, 19, 20, 21],
-                            borderColor: '#4A5D23',
-                            backgroundColor: '#4A5D23',
-                            borderWidth: 2,
+                            borderColor: '#3A4D23', // tekoa-green
+                            backgroundColor: '#3A4D23',
+                            borderWidth: 3,
                             tension: 0.4,
+                            pointBackgroundColor: '#fff',
+                            pointBorderWidth: 2,
                             fill: false
                         },
                         {
                             type: 'bar',
-                            label: 'Temperatura Máxima (°C)',
+                            label: 'Máxima (°C)',
                             data: [30, 30, 29, 28, 26, 24, 23, 24, 26, 28, 29, 30],
-                            backgroundColor: 'rgba(197, 168, 128, 0.6)',
+                            backgroundColor: 'rgba(197, 168, 128, 0.4)', // tekoa-gold light
                             borderColor: '#C5A880',
                             borderWidth: 1,
-                            borderRadius: 4
+                            borderRadius: 6,
+                            barPercentage: 0.6
                         }
                     ]
                 },
@@ -384,16 +457,21 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'bottom', labels: { font: { family: 'Inter' } } },
+                        legend: { 
+                            position: 'top', 
+                            labels: { usePointStyle: true, padding: 20 } 
+                        },
                         tooltip: {
                             mode: 'index',
                             intersect: false,
+                            backgroundColor: 'rgba(30, 36, 24, 0.9)',
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 13 },
+                            padding: 12,
+                            cornerRadius: 8,
                             callbacks: {
                                 label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) { label += ': '; }
-                                    if (context.parsed.y !== null) { label += context.parsed.y + '°C'; }
-                                    return label;
+                                    return ' ' + context.dataset.label + ': ' + context.parsed.y + '°C';
                                 }
                             }
                         }
@@ -403,47 +481,17 @@
                             beginAtZero: false,
                             min: 10,
                             max: 35,
-                            title: { display: true, text: 'Graus Celsius' }
-                        }
-                    }
-                }
-            });
-
-            // Chart 2: Land Distribution Chart (Doughnut)
-            // Need to set defaults for dark mode chart text
-            Chart.defaults.color = '#e5e7eb';
-            const ctxLand = document.getElementById('landChart').getContext('2d');
-            new Chart(ctxLand, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Área Verde & Preservação', 'Lotes Residenciais', 'Área de Lazer & Vias'],
-                    datasets: [{
-                        data: [45, 40, 15],
-                        backgroundColor: [
-                            '#4A5D23', // Green
-                            '#C5A880', // Gold
-                            '#7f8c8d'  // Gray
-                        ],
-                        borderWidth: 0,
-                        hoverOffset: 10
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: { 
-                            position: 'bottom',
-                            labels: { color: '#e5e7eb', font: { family: 'Inter' } }
+                            grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
+                            ticks: { callback: function(value) { return value + '°'; } }
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return ' ' + context.label + ': ' + context.parsed + '%';
-                                }
-                            }
+                        x: {
+                            grid: { display: false, drawBorder: false }
                         }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
                     }
                 }
             });
